@@ -6,7 +6,7 @@ import pysrt
 import asyncio
 
 srt_dir = "subtitles"
-out_dir = "output"
+out_dir = "audios"
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
