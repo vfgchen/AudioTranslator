@@ -1,6 +1,7 @@
 import os
 import glob
 import subprocess
+import argparse
 
 def audio_converte(
         in_audio_file,
@@ -47,4 +48,21 @@ def audios_converte(
         )
 
 if __name__ == "__main__":
-    audios_converte()
+    parser = argparse.ArgumentParser(description="audio format converte")
+    parser.add_argument("audio_dir", help="audio dir")
+    parser.add_argument("--lang", help="audio lang", default="en")
+    parser.add_argument("-f", help="from audio type", default="mp3")
+    parser.add_argument("-t", help="to   audio type", default="wav")
+    args = parser.parse_args()
+
+    audio_dir = args.audio_dir
+    lang      = args.lang
+    from_type = args.f
+    to_type   = args.t
+
+    audios_converte(
+        audio_dir       = audio_dir,
+        lang            = lang,
+        from_audio_type = from_type,
+        to_audio_type   = to_type
+    )
