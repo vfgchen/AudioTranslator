@@ -46,6 +46,7 @@ def audio_to_srt(
     segments = model.transcribe(audio = audio_file, verbose = True)
     # 字幕保存到文件
     segments_to_srt(segments, srt_file)
+    print(f"audio_to_srt: {srt_file}")
     return srt_file
 
 def audios_to_srts(

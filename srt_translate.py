@@ -21,8 +21,8 @@ def srt_translate(
     srt.translate(translator, from_lang, to_lang)
     srt.wrap_lines()
     srt.save(out_srt_file)
-    print(f"srt_translate output: {out_srt_file}")
     translator.quit()
+    print(f"srt_translate: {out_srt_file}")
     return out_srt_file
 
 def srts_translate(
