@@ -1,5 +1,6 @@
 import os
 import glob
+import argparse
 
 from srtranslator import SrtFile
 from srtranslator.translators.translatepy import TranslatePy
@@ -49,8 +50,14 @@ def srts_translate(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="audio to srt")
+    parser.add_argument("srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("-f", help="from type", default="en")
+    parser.add_argument("-t", help="to lang", default="zh")
+    args = parser.parse_args()
+
     srts_translate(
-        srt_dir="subtitles",
-        from_lang="en",
-        to_lang="zh"
+        srt_dir     = args.srt_dir,
+        from_lang   = args.f,
+        to_lang     = args.t,
     )

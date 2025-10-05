@@ -1,5 +1,6 @@
 import os
 import glob
+import argparse
 
 from audio_to_srt import audio_to_srt
 from srt_translate import srt_translate
@@ -90,12 +91,22 @@ def audios_translate(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="audio to srt")
+    parser.add_argument("audio_dir", help="audio dir", default="audios")
+    parser.add_argument("--audio_type", help="audio type", default="wav")
+    parser.add_argument("--from_lang", help="from lang", default="en")
+    parser.add_argument("--to_lang", help="to lang", default="zh")
+    parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--model_name", help="model name", default="base.en")
+    parser.add_argument("--model_dir", help="model dir", default="./models")
+    args = parser.parse_args()
+
     audios_translate(
-        audio_dir="audios",
-        audio_type="wav",
-        from_lang="en",
-        to_lang="zh",
-        srt_dir="subtitles",
-        model_name="base.en",
-        model_dir="./models"
+        audio_dir   = args.audio_dir,
+        audio_type  = args.audio_type,
+        from_lang   = args.from_lang,
+        to_lang     = args.to_lang,
+        srt_dir     = args.srt_dir,
+        model_name  = args.model_name,
+        model_dir   = args.model_dir,
     )

@@ -82,20 +82,15 @@ def audios_to_srts(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="audio to srt")
-    parser.add_argument("--audio_dir", help="audio dir", default="audios")
+    parser.add_argument("audio_dir", help="audio dir", default="audios")
     parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
     parser.add_argument("--audio_type", help="audio type", default="mp3")
     parser.add_argument("--lang", help="lang", default="en")
     args = parser.parse_args()
 
-    audio_dir   = args.audio_dir
-    srt_dir     = args.srt_dir
-    audio_type  = args.audio_type
-    lang        = args.lang
-
     audios_to_srts(
-        audio_dir   = audio_dir,
-        srt_dir     = srt_dir,
-        audio_type  = audio_type,
-        lang        = lang,
+        audio_dir   = args.audio_dir,
+        srt_dir     = args.srt_dir,
+        audio_type  = args.audio_type,
+        lang        = args.lang,
     )

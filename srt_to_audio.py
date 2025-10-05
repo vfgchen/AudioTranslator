@@ -1,5 +1,6 @@
 import os
 import glob
+import argparse
 
 from edge_srt_to_speech.__main__ import _main
 import pysrt
@@ -60,9 +61,16 @@ def srts_to_audios(
         )
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="audio to srt")
+    parser.add_argument("srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--audio_dir", help="audio dir", default="audios")
+    parser.add_argument("--lang", help="lang", default="zh")
+    parser.add_argument("--voice", help="dubbing voice", default="zh-CN-XiaoxiaoNeural")
+    args = parser.parse_args()
+
     srts_to_audios(
-        srt_dir="subtitles",
-        audio_dir="audios",
-        lang = "zh",
-        voice="zh-CN-XiaoxiaoNeural"
+        srt_dir     = args.srt_dir,
+        audio_dir   = args.audio_dir,
+        lang        = args.lang,
+        voice       = args.voice,
     )
