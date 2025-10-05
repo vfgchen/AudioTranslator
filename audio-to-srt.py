@@ -1,3 +1,5 @@
+import os
+import glob
 import whisper
 
 def seconds_to_time(total_seconds):
@@ -27,27 +29,46 @@ def segments_to_srt(segments, srt_file):
     return srt_file
 
 def audio_to_srt(
-    model_name = "base.en",
-    model_directory = "./models",
-    wav_dir = "audios",
-    out_dir = "subtitles"
+    audio_dir   = "audios",
+    srt_dir     = "subtitles",
+    audio_type  = "wav",
+    lang        = "en",
+    model_name  = "base.en",
+    model_dir   = "./models"
     ):
     """
-    model_name: whisper 语言识别模型
-    model_directory: 模型下载目录
+    audio_dir   : wav, mp3
+    srt_dir     : 默认 subtitles
+    audio_type  : 默认 audios
+    lang        : en, zh
+    model_name  : base.en, base, tiny.en, tiny
+    model_dir   : 默认./models
     """
+    
+    # 创建 srt 输出目录
+    if not os.path.exists(srt_dir):
+        os.makedirs(srt_dir)
     
     # 使用模型
     model = whisper.load_model(
         name = model_name,
-        download_root = model_directory)
+        download_root = model_dir)
 
-    segments = model.transcribe(
-        audio = "demo-en.mp3",
-        verbose = False,
-        )
+    # 遍历 wav 或 mp3 文件，生成 srt
+    for audio_file in glob.glob(os.path.join(audio_dir, f"**/*-{lang}.{audio_type}"), recursive=True):
+        basename = os.path.basename(audio_file).split("-")[0]
+        srt_file = f"{srt_dir}/{basename}-{lang}.srt"
     
-    segments_to_srt(segments, "demo-en.srt")
+        # 语言识别
+        segments = model.transcribe(audio = audio_file, verbose = True)
+        
+        # 字幕保存到文件
+        segments_to_srt(segments, srt_file)
 
 if __name__ == "__main__":
-    audio_to_srt()
+    audio_to_srt(
+        audio_dir   = "audios",
+        srt_dir     = "subtitles",
+        audio_type  = "wav",
+        lang        = "en",
+    )
