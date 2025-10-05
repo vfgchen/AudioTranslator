@@ -29,6 +29,26 @@ def segments_to_srt(segments, srt_file):
     return srt_file
 
 def audio_to_srt(
+        audio_file,
+        srt_file,
+        model_name="base.en",
+        model_dir="./models"
+    ):
+    # 创建 srt 目录
+    srt_dir = os.path.dirname(srt_file)
+    if not os.path.exists(srt_dir):
+        os.makedirs(srt_dir)
+    # 使用模型
+    model = whisper.load_model(
+        name = model_name,
+        download_root = model_dir)
+    # 语言识别
+    segments = model.transcribe(audio = audio_file, verbose = True)
+    # 字幕保存到文件
+    segments_to_srt(segments, srt_file)
+    return srt_file
+
+def audios_to_srts(
     audio_dir   = "audios",
     srt_dir     = "subtitles",
     audio_type  = "wav",
@@ -44,29 +64,22 @@ def audio_to_srt(
     model_name  : base.en, base, tiny.en, tiny
     model_dir   : 默认./models
     """
-    
     # 创建 srt 输出目录
     if not os.path.exists(srt_dir):
         os.makedirs(srt_dir)
-    
-    # 使用模型
-    model = whisper.load_model(
-        name = model_name,
-        download_root = model_dir)
-
     # 遍历 wav 或 mp3 文件，生成 srt
     for audio_file in glob.glob(os.path.join(audio_dir, f"**/*-{lang}.{audio_type}"), recursive=True):
         basename = os.path.basename(audio_file).split("-")[0]
         srt_file = f"{srt_dir}/{basename}-{lang}.srt"
-    
-        # 语言识别
-        segments = model.transcribe(audio = audio_file, verbose = True)
-        
-        # 字幕保存到文件
-        segments_to_srt(segments, srt_file)
+        audio_to_srt(
+            audio_file=audio_file,
+            srt_file=srt_file,
+            model_name=model_name,
+            model_dir=model_dir,
+        )
 
 if __name__ == "__main__":
-    audio_to_srt(
+    audios_to_srts(
         audio_dir   = "audios",
         srt_dir     = "subtitles",
         audio_type  = "wav",

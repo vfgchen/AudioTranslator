@@ -1,7 +1,7 @@
 import os
 import glob
 
-from audio_to_srt import audio_to_srt
+from audio_to_srt import audios_to_srts
 from srt_translate import srt_translate
 from srt_to_speech import srt_to_speech
 
@@ -34,7 +34,7 @@ def audio_translate(
         
         # 语音识别生成字幕
         from_lang_srt_file = os.path.join(srt_dir, f"{basename}-{from_lang}.srt")
-        audio_to_srt(
+        audios_to_srts(
             audio_dir=audio_dir,
             srt_dir=srt_dir,
             audio_type=audio_type,
