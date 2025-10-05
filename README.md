@@ -1,5 +1,13 @@
 ## AudioTranslator
 
+```
+pip install ffmpeg
+pip install whisper
+pip install srtranslate
+pip install srtranslator
+pip install edge-srt-to-speech
+```
+
 1. audio_converte.py
     对音频进行格式转换
 2. audio_to_srt.py
