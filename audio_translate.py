@@ -2,6 +2,7 @@ import os
 import glob
 import argparse
 
+from audio_converte import audio_converte
 from audio_to_srt import audio_to_srt
 from srt_translate import srt_translate
 from srt_to_audio import srt_to_audio
@@ -16,6 +17,11 @@ def audio_translate(
         model_name="base.en",
         model_dir="./models",
     ):
+    # mp3 转 wav, wav 生成的srt字幕更好
+    if in_audio_file.endswith(".mp3"):
+        wav_audio_file = f"{os.path.splitext(in_audio_file)[0]}.wav"
+        audio_converte(in_audio_file, wav_audio_file)
+        in_audio_file = wav_audio_file
     # 创建 srt 目录
     if not os.path.exists(srt_dir):
         os.makedirs(srt_dir)
