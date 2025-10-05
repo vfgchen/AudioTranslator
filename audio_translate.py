@@ -3,7 +3,7 @@ import glob
 
 from audio_to_srt import audios_to_srts
 from srt_translate import srts_translate
-from srt_to_speech import srt_to_speech
+from srt_to_audio import srts_to_audios
 
 def audio_translate(
         audio_dir = "audios",
