@@ -26,11 +26,21 @@ def segments_to_srt(segments, srt_file):
             file.write(f"{seq}\n{start} --> {end}\n{text}\n\n")
     return srt_file
 
-def main():
+def audio_to_srt(
+    model_name = "base.en",
+    model_directory = "./models",
+    wav_dir = "audios",
+    out_dir = "subtitles"
+    ):
+    """
+    model_name: whisper 语言识别模型
+    model_directory: 模型下载目录
+    """
+    
+    # 使用模型
     model = whisper.load_model(
-        name = "base.en",
-        download_root = "./models"
-        )
+        name = model_name,
+        download_root = model_directory)
 
     segments = model.transcribe(
         audio = "demo-en.mp3",
@@ -40,4 +50,4 @@ def main():
     segments_to_srt(segments, "demo-en.srt")
 
 if __name__ == "__main__":
-    main()
+    audio_to_srt()
