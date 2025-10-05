@@ -11,7 +11,7 @@ def seconds_to_time(total_seconds):
         minutes = int((total_seconds % 3600) // 60)
         seconds = int(total_seconds % 60)
         milliseconds = int(total_seconds % 1 * 1000)
-        return f"{hours:02d}:{minutes:02d}:{seconds:02d},{milliseconds}"
+        return f"{hours:02d}:{minutes:02d}:{seconds:02d},{milliseconds:03d}"
     except (ValueError, TypeError):
         return "无效输入"
 

@@ -5,20 +5,28 @@ from edge_srt_to_speech.__main__ import _main
 import pysrt
 import asyncio
 
-srt_dir = "subtitles"
-out_dir = "audios"
-if not os.path.exists(out_dir):
-    os.makedirs(out_dir)
+def srt_to_speech(
+        srt_dir = "subtitles",
+        out_dir = "audios",
+        lang = "zh",
+        voice = "zh-CN-XiaoxiaoNeural"):
+    """
+    srt_dir : srt 输入目录
+    out_dir : mp3 输出目录
+    lang    : 配音语言
+    voice   : 配音语音
+    """
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
-def main():
-    for srt_file in glob.glob(os.path.join(srt_dir, "**/*zh.srt"), recursive=True):
+    for srt_file in glob.glob(os.path.join(srt_dir, f"**/*-{lang}.srt"), recursive=True):
         basename = os.path.basename(srt_file).split("-")[0]
-        out_file = f"{out_dir}/{basename}-zh.mp3"
+        out_file = f"{out_dir}/{basename}-{lang}.mp3"
 
         try:
             asyncio.get_event_loop().run_until_complete(_main(
                 srt_data = pysrt.open(srt_file),
-                voice = "zh-CN-XiaoxiaoNeural",
+                voice = voice,
                 out_file = out_file,
                 rate = "+0%",
                 volume = "+0%",
@@ -28,6 +36,10 @@ def main():
         finally:
             print(f"generate mp3: {out_file}")
 
-
 if __name__ == "__main__":
-    main()
+    srt_to_speech(
+        srt_dir="subtitles",
+        out_dir="audios",
+        lang = "zh",
+        voice="zh-CN-XiaoxiaoNeural"
+    )
