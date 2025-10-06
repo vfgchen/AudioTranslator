@@ -98,20 +98,20 @@ if __name__ == "__main__":
     for model_name in models:
         print(model_name)
 
-    # parser = argparse.ArgumentParser(description="audio to srt")
-    # parser.add_argument("audio_dir", help="audio dir", default="audios")
-    # parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
-    # parser.add_argument("--audio_type", help="audio type", default="wav")
-    # parser.add_argument("--lang", help="lang", default="en")
-    # parser.add_argument("--model_name", help="model name", default="base.en")
-    # parser.add_argument("--model_dir", help="model dir", default="./models")
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="audio to srt")
+    parser.add_argument("audio_dir", help="audio dir", default="audios")
+    parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--audio_type", help="audio type", default="wav")
+    parser.add_argument("--lang", help="lang", default="en")
+    parser.add_argument("--model_name", help="model name", default="base.en")
+    parser.add_argument("--model_dir", help="model dir", default="./models")
+    args = parser.parse_args()
 
-    # audios_to_srts(
-    #     audio_dir   = args.audio_dir,
-    #     srt_dir     = args.srt_dir,
-    #     audio_type  = args.audio_type,
-    #     lang        = args.lang,
-    #     model_name  = args.model_name,
-    #     model_dir   = args.model_dir,
-    # )
+    audios_to_srts(
+        audio_dir   = args.audio_dir,
+        srt_dir     = args.srt_dir,
+        audio_type  = args.audio_type,
+        lang        = args.lang,
+        model_name  = args.model_name,
+        model_dir   = args.model_dir,
+    )
