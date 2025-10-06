@@ -86,6 +86,8 @@ if __name__ == "__main__":
     parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
     parser.add_argument("--audio_type", help="audio type", default="wav")
     parser.add_argument("--lang", help="lang", default="en")
+    parser.add_argument("--model_name", help="model name", default="base.en")
+    parser.add_argument("--model_dir", help="model dir", default="./models")
     args = parser.parse_args()
 
     audios_to_srts(
@@ -93,4 +95,6 @@ if __name__ == "__main__":
         srt_dir     = args.srt_dir,
         audio_type  = args.audio_type,
         lang        = args.lang,
+        model_name  = args.model_name,
+        model_dir   = args.model_dir,
     )
