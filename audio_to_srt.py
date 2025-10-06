@@ -2,6 +2,7 @@ import os
 import glob
 import whisper
 import argparse
+import torch
 
 def seconds_to_time(total_seconds):
     """
@@ -39,10 +40,22 @@ def audio_to_srt(
     srt_dir = os.path.dirname(srt_file)
     if not os.path.exists(srt_dir):
         os.makedirs(srt_dir)
+
+    # 检查 CUDA 是否可用
+    print(f"CUDA available: {torch.cuda.is_available()}")
+    print(f"CUDA device count: {torch.cuda.device_count()}")
+    if torch.cuda.is_available():
+        device = "cuda"
+        print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+    else:
+        device = "cpu"
+        print("Using CPU")
+
     # 使用模型
     model = whisper.load_model(
         name = model_name,
-        download_root = model_dir)
+        download_root = model_dir,
+        device = device)
     # 语言识别
     segments = model.transcribe(audio = audio_file, verbose = True)
     # 字幕保存到文件
@@ -81,20 +94,24 @@ def audios_to_srts(
         )
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="audio to srt")
-    parser.add_argument("audio_dir", help="audio dir", default="audios")
-    parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
-    parser.add_argument("--audio_type", help="audio type", default="wav")
-    parser.add_argument("--lang", help="lang", default="en")
-    parser.add_argument("--model_name", help="model name", default="base.en")
-    parser.add_argument("--model_dir", help="model dir", default="./models")
-    args = parser.parse_args()
+    models = whisper.available_models()
+    for model_name in models:
+        print(model_name)
 
-    audios_to_srts(
-        audio_dir   = args.audio_dir,
-        srt_dir     = args.srt_dir,
-        audio_type  = args.audio_type,
-        lang        = args.lang,
-        model_name  = args.model_name,
-        model_dir   = args.model_dir,
-    )
+    # parser = argparse.ArgumentParser(description="audio to srt")
+    # parser.add_argument("audio_dir", help="audio dir", default="audios")
+    # parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
+    # parser.add_argument("--audio_type", help="audio type", default="wav")
+    # parser.add_argument("--lang", help="lang", default="en")
+    # parser.add_argument("--model_name", help="model name", default="base.en")
+    # parser.add_argument("--model_dir", help="model dir", default="./models")
+    # args = parser.parse_args()
+
+    # audios_to_srts(
+    #     audio_dir   = args.audio_dir,
+    #     srt_dir     = args.srt_dir,
+    #     audio_type  = args.audio_type,
+    #     lang        = args.lang,
+    #     model_name  = args.model_name,
+    #     model_dir   = args.model_dir,
+    # )
