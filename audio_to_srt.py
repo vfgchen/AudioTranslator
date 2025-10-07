@@ -67,6 +67,7 @@ def audios_to_srts(
     audio_dir   = "audios",
     srt_dir     = "subtitles",
     audio_type  = "wav",
+    delete_wav  = "yes",
     lang        = "en",
     model_name  = "base.en",
     model_dir   = "./models"
@@ -75,6 +76,7 @@ def audios_to_srts(
     audio_dir   : wav, mp3
     srt_dir     : 默认 subtitles
     audio_type  : 默认 audios
+    delete_wav  : 默认 yes
     lang        : en, zh
     model_name  : base.en, base, tiny.en, tiny
     model_dir   : 默认./models
@@ -92,6 +94,11 @@ def audios_to_srts(
             model_name=model_name,
             model_dir=model_dir,
         )
+        # 转换完成之后删除 wav 文件
+        if (audio_type == "wav" and (delete_wav.lower() == "yes"
+                                  or delete_wav.lower() == "y"
+                                  or delete_wav.lower() == "true")):
+            os.remove(audio_file)
 
 if __name__ == "__main__":
     models = whisper.available_models()
@@ -102,6 +109,7 @@ if __name__ == "__main__":
     parser.add_argument("audio_dir", help="audio dir", default="audios")
     parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
     parser.add_argument("--audio_type", help="audio type", default="wav")
+    parser.add_argument("--delete_wav", help="delete wav: yes, y, true, no, n, false", default="yes")
     parser.add_argument("--lang", help="lang", default="en")
     parser.add_argument("--model_name", help="model name", default="base.en")
     parser.add_argument("--model_dir", help="model dir", default="./models")
@@ -111,6 +119,7 @@ if __name__ == "__main__":
         audio_dir   = args.audio_dir,
         srt_dir     = args.srt_dir,
         audio_type  = args.audio_type,
+        delete_wav  = args.delete_wav,
         lang        = args.lang,
         model_name  = args.model_name,
         model_dir   = args.model_dir,
