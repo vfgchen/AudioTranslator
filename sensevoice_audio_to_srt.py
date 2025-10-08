@@ -16,45 +16,15 @@ def seconds_to_srttime(seconds):
     s, ms = divmod(s, 1)
     return f"{int(h):02d}:{int(m):02d}:{int(s):02d},{int(ms * 1000):03d}"
 
+
+
 # 音频转字幕
 def audio_to_srt(
         wav_file,
         srt_file,
-        model_dir="./models",
-        lang="en",
-        vad_model_dir="iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
-        asr_model_dir="iic/SenseVoiceSmall"
+        vad_model,
+        asr_model,
         ):
-
-    # 模型路径
-    vad_model_path = os.path.join(model_dir, vad_model_dir)
-    asr_model_path = os.path.join(model_dir, asr_model_dir)
-
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-
-    # 加载VAD模型
-    vad_model = AutoModel(
-        model=vad_model_dir,
-        model_path=vad_model_path,
-        device=device,
-        disable_update=True,
-        max_single_segment_time=20000,  # 最大单个片段时长
-        merge_length_s=15,  # 合并长度，单位为秒
-        max_end_silence_time=500,  # 静音阈值，范围500ms～6000ms，默认值800ms。
-    )
-
-    # 加载SenseVoice模型
-    asr_model = AutoModel(
-        model=asr_model_dir,
-        model_path=asr_model_path,
-        device=device,
-        disable_update=True,
-        language=lang,
-        use_itn=True,
-        batch_size_s=60,
-        merge_vad=True,  # 启用 VAD 断句
-        ban_emo_unk=True,  # 禁用情感标签
-    )
 
     # 获取 vad 分段
     vad_res = vad_model.generate(input=wav_file, cache={})
@@ -97,14 +67,13 @@ def audio_to_srt(
     return srt_file
 
 def audios_to_srts(
+    vad_model,
+    asr_model,
     audio_dir   = "audios",
     srt_dir     = "subtitles",
     audio_type  = "wav",
     delete_wav  = "yes",
     lang        = "en",
-    model_dir   = "./models",
-    vad_model_dir = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
-    asr_model_dir = "iic/SenseVoiceSmall",
     ):
     # 创建 srt 输出目录
     if not os.path.exists(srt_dir):
@@ -116,13 +85,50 @@ def audios_to_srts(
         audio_to_srt(
             wav_file=audio_file,
             srt_file=srt_file,
-            lang=lang,
-            model_dir=model_dir,
-            vad_model_dir=vad_model_dir,
-            asr_model_dir=asr_model_dir,
+            vad_model=vad_model,
+            asr_model=asr_model,
         )
         if delete_wav.lower() == "yes":
             os.remove(audio_file)
+
+# 加载模型
+def load_models(
+        model_dir="./models",
+        lang="en",
+        vad_model_dir="iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
+        asr_model_dir="iic/SenseVoiceSmall"
+    ):
+    # 模型路径
+    vad_model_path = os.path.join(model_dir, vad_model_dir)
+    asr_model_path = os.path.join(model_dir, asr_model_dir)
+
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    print(f"use device: {device}")
+
+    # 加载VAD模型
+    vad_model = AutoModel(
+        model=vad_model_dir,
+        model_path=vad_model_path,
+        device=device,
+        disable_update=True,
+        max_single_segment_time=20000,  # 最大单个片段时长
+        merge_length_s=15,  # 合并长度，单位为秒
+        max_end_silence_time=500,  # 静音阈值，范围500ms～6000ms，默认值800ms。
+    )
+
+    # 加载SenseVoice模型
+    asr_model = AutoModel(
+        model=asr_model_dir,
+        model_path=asr_model_path,
+        device=device,
+        disable_update=True,
+        language=lang,
+        use_itn=True,
+        batch_size_s=60,
+        merge_vad=True,  # 启用 VAD 断句
+        ban_emo_unk=True,  # 禁用情感标签
+    )
+    return vad_model, asr_model
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="audio to srt")
@@ -134,13 +140,19 @@ if __name__ == "__main__":
     parser.add_argument("--model_dir", help="model dir", default="./models")
     args = parser.parse_args()  
 
+    vad_model, asr_model = load_models(
+        model_dir       = args.model_dir,
+        lang            = args.lang,
+        vad_model_dir   = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
+        asr_model_dir   = "iic/SenseVoiceSmall"
+    )
+
     audios_to_srts(
+        vad_model       = vad_model,
+        asr_model       = asr_model,
         audio_dir       = args.audio_dir,
         srt_dir         = args.srt_dir,
         audio_type      = args.audio_type,
         delete_wav      = args.delete_wav,
         lang            = args.lang,
-        model_dir       = args.model_dir,
-        vad_model_dir   = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
-        asr_model_dir   = "iic/SenseVoiceSmall",
     )
