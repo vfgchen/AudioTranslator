@@ -1,11 +1,16 @@
 ## AudioTranslator
 
 ```
+# whipser 模型
 pip install ffmpeg
-pip install whisper
-pip install srtranslate
+pip install openai-whisper
 pip install srtranslator
 pip install edge-srt-to-speech
+
+# SenseVoice 模型
+pip install funasr
+pip install torchaudio
+pip install emoji
 
 # 或者安装最新稳定版（通常支持最新 CUDA）
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
