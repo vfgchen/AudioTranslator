@@ -1,6 +1,8 @@
 import os
-import io
+import glob
+import argparse
 
+import io
 import emoji
 import soundfile
 import torch
@@ -15,60 +17,20 @@ def seconds_to_srttime(seconds):
     return f"{int(h):02d}:{int(m):02d}:{int(s):02d},{int(ms * 1000):03d}"
 
 # 音频转字幕
-def audio_to_srt(wav_path, srt_path, vad_model, asr_model):
-    # 获取 vad 分段
-    vad_res = vad_model.generate(input=wav_path, cache={})
-    vad_segments = vad_res[0]["value"]
-
-    if len(vad_segments) <= 0: return srt_path
-
-    # 创建 srt 文件目录
-    if not os.path.exists(os.path.dirname(srt_path)):
-        os.makedirs(os.path.dirname(srt_path))
-
-    # 加载原始音频数据
-    audio_data, sample_rate = soundfile.read(wav_path)
-
-    # 对每个分段语音识别生成字幕
-    srt_items = []
-    for vad_segment in vad_segments:
-        # 截取音频片段
-        start, end = vad_segment  # 获取开始和结束时间
-        start_sample = int(start * sample_rate / 1000)  # 转换为样本数
-        end_sample = int(end * sample_rate / 1000)  # 转换为样本数
-        audio_segment = audio_data[start_sample:end_sample]
-
-        # 语音转文字处理
-        with io.BytesIO() as buffer:
-            soundfile.write(buffer, audio_segment, sample_rate, format="WAV")
-            buffer.seek(0)  # 重置缓冲区指针到开头
-            asr_res = asr_model.generate(input=buffer, cache={})
-
-        # 处理输出结果
-        text = rich_transcription_postprocess(asr_res[0]["text"])
-        text = emoji.replace_emoji(text, replace="")  # 去除表情符号
-        srt_items.append(f"{len(srt_items)+1}\n{seconds_to_srttime(start / 1000)} --> {seconds_to_srttime(end / 1000)}\n{text}\n\n")
-
-    # 字幕写入到文件
-    with open(srt_path, "w", encoding="utf-8") as srt_file:
-        for srt_item in srt_items:
-            srt_file.write(srt_item)
-    print(f"audio_to_srt: {srt_file}")
-    return srt_file
-
-if __name__ == "__main__":
+def audio_to_srt(
+        wav_file,
+        srt_file,
+        model_dir="./models",
+        lang="en",
+        vad_model_dir="iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
+        asr_model_dir="iic/SenseVoiceSmall"
+        ):
 
     # 模型路径
-    vad_model_dir = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch"
-    vad_model_path = os.path.join("./models", vad_model_dir)
+    vad_model_path = os.path.join(model_dir, vad_model_dir)
+    asr_model_path = os.path.join(model_dir, asr_model_dir)
 
-    asr_model_dir = "iic/SenseVoiceSmall"
-    asr_model_path = os.path.join("./models", asr_model_dir)
-
-    wav_path = "./audios/001-en.wav"
-    srt_path = "./subtitles/001-en.srt"
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    lang = "en"
 
     # 加载VAD模型
     vad_model = AutoModel(
@@ -94,5 +56,91 @@ if __name__ == "__main__":
         ban_emo_unk=True,  # 禁用情感标签
     )
 
-    # 模型推理生成字幕
-    audio_to_srt(wav_path, srt_path, vad_model, asr_model)
+    # 获取 vad 分段
+    vad_res = vad_model.generate(input=wav_file, cache={})
+    vad_segments = vad_res[0]["value"]
+
+    if len(vad_segments) <= 0: return srt_file
+
+    # 创建 srt 文件目录
+    if not os.path.exists(os.path.dirname(srt_file)):
+        os.makedirs(os.path.dirname(srt_file))
+
+    # 加载原始音频数据
+    audio_data, sample_rate = soundfile.read(wav_file)
+
+    # 对每个分段语音识别生成字幕
+    srt_items = []
+    for vad_segment in vad_segments:
+        # 截取音频片段
+        start, end = vad_segment  # 获取开始和结束时间
+        start_sample = int(start * sample_rate / 1000)  # 转换为样本数
+        end_sample = int(end * sample_rate / 1000)  # 转换为样本数
+        audio_segment = audio_data[start_sample:end_sample]
+
+        # 语音转文字处理
+        with io.BytesIO() as buffer:
+            soundfile.write(buffer, audio_segment, sample_rate, format="WAV")
+            buffer.seek(0)  # 重置缓冲区指针到开头
+            asr_res = asr_model.generate(input=buffer, cache={})
+
+        # 处理输出结果
+        text = rich_transcription_postprocess(asr_res[0]["text"])
+        text = emoji.replace_emoji(text, replace="")  # 去除表情符号
+        srt_items.append(f"{len(srt_items)+1}\n{seconds_to_srttime(start / 1000)} --> {seconds_to_srttime(end / 1000)}\n{text}\n\n")
+
+    # 字幕写入到文件
+    with open(srt_file, "w", encoding="utf-8") as file:
+        for srt_item in srt_items:
+            file.write(srt_item)
+    print(f"audio_to_srt: {srt_file}")
+    return srt_file
+
+def audios_to_srts(
+    audio_dir   = "audios",
+    srt_dir     = "subtitles",
+    audio_type  = "wav",
+    delete_wav  = "yes",
+    lang        = "en",
+    model_dir   = "./models",
+    vad_model_dir = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
+    asr_model_dir = "iic/SenseVoiceSmall",
+    ):
+    # 创建 srt 输出目录
+    if not os.path.exists(srt_dir):
+        os.makedirs(srt_dir)
+    # 遍历 wav 或 mp3 文件，生成 srt
+    for audio_file in glob.glob(os.path.join(audio_dir, f"**/*-{lang}.{audio_type}"), recursive=True):
+        basename = os.path.basename(audio_file).split("-")[0]
+        srt_file = f"{srt_dir}/{basename}-{lang}.srt"
+        audio_to_srt(
+            wav_file=audio_file,
+            srt_file=srt_file,
+            lang=lang,
+            model_dir=model_dir,
+            vad_model_dir=vad_model_dir,
+            asr_model_dir=asr_model_dir,
+        )
+        if delete_wav.lower() == "yes":
+            os.remove(audio_file)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="audio to srt")
+    parser.add_argument("audio_dir", help="audio dir", default="audios")
+    parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--audio_type", help="audio type", default="wav")
+    parser.add_argument("--delete_wav", help="delete wav: yes, y, true, no, n, false", default="no")
+    parser.add_argument("--lang", help="lang", default="en")
+    parser.add_argument("--model_dir", help="model dir", default="./models")
+    args = parser.parse_args()  
+
+    audios_to_srts(
+        audio_dir       = args.audio_dir,
+        srt_dir         = args.srt_dir,
+        audio_type      = args.audio_type,
+        delete_wav      = args.delete_wav,
+        lang            = args.lang,
+        model_dir       = args.model_dir,
+        vad_model_dir   = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
+        asr_model_dir   = "iic/SenseVoiceSmall",
+    )

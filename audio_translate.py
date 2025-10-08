@@ -3,7 +3,7 @@ import glob
 import argparse
 
 from audio_converte import audio_converte
-from audio_to_srt import audio_to_srt
+from whisper_audio_to_srt import audio_to_srt
 from srt_translate import srt_translate
 from srt_to_audio import srt_to_audio
 
