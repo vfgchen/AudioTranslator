@@ -25,8 +25,8 @@ def audio_converte(
             in_audio_file,
             out_audio_file
         ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        # stdout=subprocess.DEVNULL,
+        # stderr=subprocess.DEVNULL,
     )
     if retcode != 0:
         raise subprocess.CalledProcessError(retcode, "ffmpeg")
