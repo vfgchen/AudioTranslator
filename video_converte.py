@@ -222,29 +222,31 @@ def videos_converte(
     )
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description="videos converte")
-    # parser.add_argument("--command", help="command", choices=[
-    #     "videos_to_navideos",
-    #     "videos_to_wavs",
-    #     "videos_to_mp3s",
-    #     "videos_audios_srts_merge"
-    # ])
-    # parser.add_argument("--video_dir", help="video dir")
-    # parser.add_argument("--suffix", help="file suffix")
-    # args = parser.parse_args()
+    # videos_converte("videos_to_noaudio",        "D:/output", ".mp4")
+    # videos_converte("videos_to_wavs",           "D:/output", ".mp4")
+    # videos_converte("videos_to_mp3s",           "D:/output", ".mp4")
+    # videos_converte("videos_audios_srts_merge", "D:/output", "zh.mp3")
 
-    # videos_converte(
-    #     command = args.command,
-    #     video_dir = args.video_dir,
-    #     suffix = args.suffix
-    # )
+    # --------------------------
+    parser = argparse.ArgumentParser(description="videos converte")
+    parser.add_argument("command", help="command", choices=[
+        "videos_to_navideos",
+        "videos_to_wavs",
+        "videos_to_mp3s",
+        "videos_audios_srts_merge"
+    ])
+    parser.add_argument("video_dir", help="video dir")
+    parser.add_argument("suffix", help="file suffix")
+    args = parser.parse_args()
 
+    print(f"args: {args}")
     videos_converte(
-        command = "videos_audios_srts_merge",
-        video_dir = "D:/output",
-        suffix = "zh.mp3"
+        command = args.command,
+        video_dir = args.video_dir,
+        suffix = args.suffix
     )
 
+    # ---------------------------
     # root_dir = "D:/output"
     # in_video_file  = os.path.join(root_dir, "104-en.mkv")
     # na_video_file  = os.path.join(root_dir, "104-na.mp4")
