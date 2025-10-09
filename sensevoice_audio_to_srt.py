@@ -112,7 +112,7 @@ def load_models(
         device=device,
         disable_update=True,
         max_single_segment_time=20000,  # 最大单个片段时长
-        merge_length_s=15,  # 合并长度，单位为秒
+        merge_length_s=10,  # 合并长度，单位为秒
         max_end_silence_time=500,  # 静音阈值，范围500ms～6000ms，默认值800ms。
     )
 
