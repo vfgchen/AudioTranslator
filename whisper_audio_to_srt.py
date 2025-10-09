@@ -21,13 +21,15 @@ def seconds_to_time(total_seconds):
 
 def segments_to_srt(segments, srt_file):
     with open(srt_file, "w") as file:
-        seq = 0
+        seq = 1
         for segment in segments["segments"]:
-            seq = seq + 1
             start = seconds_to_time(segment["start"])
             end   = seconds_to_time(segment["end"])
             text  = segment["text"].strip()
+            if end <= start or text == "":
+                continue
             file.write(f"{seq}\n{start} --> {end}\n{text}\n\n")
+            seq = seq + 1
     return srt_file
 
 def audio_to_srt(

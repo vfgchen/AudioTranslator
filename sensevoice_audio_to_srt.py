@@ -57,6 +57,9 @@ def audio_to_srt(
         # 处理输出结果
         text = rich_transcription_postprocess(asr_res[0]["text"])
         text = emoji.replace_emoji(text, replace="")  # 去除表情符号
+        text = text.strip()
+        if end <= start or text == "":
+            continue
         srt_items.append(f"{len(srt_items)+1}\n{seconds_to_srttime(start / 1000)} --> {seconds_to_srttime(end / 1000)}\n{text}\n\n")
 
     # 字幕写入到文件
