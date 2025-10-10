@@ -57,11 +57,18 @@ def srts_to_txts(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="srt to txt")
+    parser.add_argument("--func_name", help="func name", choices=["srts_correct", "srts_to_txts"], default="srts_to_txts")
     parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
     parser.add_argument("--suffix", help="filename suffix", default="en.srt")
     args = parser.parse_args()
 
-    srts_to_txts(
+    func_name = args.func_name
+    assert func_name in [
+        "srts_correct",
+        "srts_to_txts",
+    ]
+
+    globals()[func_name](
         srt_dir = args.srt_dir,
         suffix  = args.suffix,
     )
