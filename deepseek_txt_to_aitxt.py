@@ -60,10 +60,12 @@ def build_client(
 def text_ai_translate(
         input_text: str,
         context_info: Dict = None,
+        req_file: str = None,
         chat_client: OpenAI = None,
         model: str = "deepseek-reasoner"
         ):
     """
+    req_file: 暂存发送deepseek请求的文件
     model:
         deepseek-chat
         deepseek-reasoner
@@ -73,7 +75,11 @@ def text_ai_translate(
         input_text=input_text,
         context_info=context_info
         )
+    # 暂存发送给deepseek的请求
+    with open(req_file, "w", encoding="utf-8") as file:
+        file.write(input_content)
     # 输出内容
+    print(f"\ntext_ai_translate, send:\n{input_content}")
     response = chat_client.chat.completions.create(
         model=model,
         messages=[
@@ -83,6 +89,7 @@ def text_ai_translate(
     )
     # 输出文本
     content = response.choices[0].message.content
+    print(f"\ntext_ai_translate, receive:\n{content}")
     # 思考文本
     try:
         reasoning_content = response.choices[0].message.reasoning_content
@@ -104,14 +111,15 @@ def txt_ai_translate(
     # 文本翻译
     context_info = dict()
     if topic: context_info["topic"] = topic
-    print(f"txt_ai_translate send: {input_text}")
+    # request file
+    req_file = f"{path.splitext(txt_file)[0]}.req"
     content, reasoning = text_ai_translate(
         input_text=input_text,
         context_info=context_info,
+        req_file=req_file,
         chat_client=chat_client,
-        model=model
+        model=model,
     )
-    print(f"txt_ai_translate receive: {content}")
     # 保存deepseek输出内容，思考内容
     content_file = f"{path.splitext(txt_file)[0]}.content"
     reasoning_file = f"{path.splitext(txt_file)[0]}.reasoning"
@@ -186,6 +194,7 @@ def txts_to_aitxts(
         chat_client=None,
         topic=None,
         model="deepseek-chat",
+        delete_txt_file=True,
     ):
     for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
         txt_to_aitxt(
@@ -194,6 +203,8 @@ def txts_to_aitxts(
             topic=topic,
             model=model,
         )
+        if delete_txt_file:
+            os.remove(txt_file)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="deepseek txt to aisrt")
@@ -201,6 +212,7 @@ if __name__ == "__main__":
     parser.add_argument("--suffix", help="filename suffix", default="en.txt")
     parser.add_argument("--topic", help="ai translate topic", default="Power Platform")
     parser.add_argument("--model", help="deepseek model", choices=["deepseek-chat", "deepseek-reasoner"], default="deepseek-chat")
+    parser.add_argument("--delete_txt_file", help="delete txt file on success", default="yes")
     parser.add_argument("--api_key", help="deepseek api key", default="")
     parser.add_argument("--base_url", help="deepseek api key", default="https://api.deepseek.com")
     args = parser.parse_args()
@@ -215,10 +227,12 @@ if __name__ == "__main__":
         base_url    = "https://api.deepseek.com",
     )
 
+    delete_txt_file = args.delete_txt_file.lower() in ["yes", "y", "true"]
     txts_to_aitxts(
         txt_dir     = args.txt_dir,
         suffix      = args.suffix,
         chat_client = chat_client,
         topic       = args.topic,
         model       = args.model,
+        delete_txt_file = delete_txt_file
     )
