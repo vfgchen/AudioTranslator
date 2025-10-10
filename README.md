@@ -23,6 +23,7 @@ modelscope download --model iic/speech_fsmn_vad_zh-cn-16k-common-pytorch --local
 
 # deepseek chat 翻译
 pip install openai
+pip install pysrt
 ```
 
 1. audio_converte.py
