@@ -36,7 +36,7 @@ def srt_to_audio(
 
 def srts_to_audios(
         srt_dir = "subtitles",
-        suffix = "srt",
+        suffix = "aisrt",
         audio_dir = "audios",
         lang = "zh",
         voice = "zh-CN-XiaoxiaoNeural",
@@ -65,7 +65,7 @@ def srts_to_audios(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="audio to srt")
-    parser.add_argument("srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
     parser.add_argument("--suffix", help="filename suffix", choices=["srt", "aisrt"], default="aisrt")
     parser.add_argument("--audio_dir", help="audio dir", default="audios")
     parser.add_argument("--lang", help="lang", default="zh")
