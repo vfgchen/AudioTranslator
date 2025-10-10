@@ -189,13 +189,23 @@ def videos_to_mp3s(
 
 def videos_audios_srts_merge(
         video_dir,
-        suffix="-zh.mp3"
+        suffix="-zh.mp3",
     ):
     for zh_mp3_file in glob.glob(os.path.join(video_dir, f"**/*{suffix}"), recursive=True):
         basename = os.path.basename(zh_mp3_file).split("-")[0]
         na_video_file = os.path.join(video_dir, f"{basename}-na.mp4")
-        zh_srt_file   = os.path.join(video_dir, f"{basename}-zh.srt")
-        en_srt_file   = os.path.join(video_dir, f"{basename}-en.srt")
+        assert os.path.exists(na_video_file)
+
+        zh_srt_file   = os.path.join(video_dir, f"{basename}-zh.aisrt")
+        if not os.path.exists(zh_srt_file):
+            zh_srt_file = os.path.join(video_dir, f"{basename}-zh.srt")
+        assert os.path.exists(zh_srt_file)
+
+        en_srt_file   = os.path.join(video_dir, f"{basename}-en.aisrt")
+        if not os.path.exists(en_srt_file):
+            en_srt_file = os.path.join(video_dir, f"{basename}-en.srt")
+        assert os.path.exists(en_srt_file)
+
         zh_mp4_file   = os.path.join(video_dir, f"{basename}-zh.mp4")
         video_audio_srts_merge(
             in_video_file=na_video_file,
