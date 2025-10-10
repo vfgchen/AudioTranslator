@@ -1,5 +1,8 @@
 # Please install OpenAI SDK first: `pip3 install openai`
 import os
+import glob
+import argparse
+
 from os import path
 from typing import Dict
 from openai import OpenAI
@@ -80,7 +83,7 @@ def text_ai_translate(
     try:
         reasoning_content = response.choices[0].message.reasoning_content
     except:
-        print("warn: no reasoning_content")
+        print("warn text_ai_translate: no reasoning_content")
         reasoning_content = ""
     return content, reasoning_content
 
@@ -97,18 +100,17 @@ def txt_ai_translate(
     # 文本翻译
     context_info = dict()
     if topic: context_info["topic"] = topic
+    print(f"txt_ai_translate send: {input_text}")
     content, reasoning = text_ai_translate(
         input_text=input_text,
         context_info=context_info,
         chat_client=chat_client,
         model=model
     )
+    print(f"txt_ai_translate receive: {content}")
     # 保存deepseek输出内容，思考内容
-    txt_dir = path.dirname(txt_file)
-    # basename = path.basename(txt_file).split("-")[0]
-    basename = path.splitext(txt_file)[0]
-    content_file = path.join(txt_dir, f"{basename}.content")
-    reasoning_file = path.join(txt_dir, f"{basename}.reasoning")
+    content_file = f"{path.splitext(txt_file)[0]}.content"
+    reasoning_file = f"{path.splitext(txt_file)[0]}.reasoning"
     if content != "":
         with open(content_file, "w", encoding="utf-8") as file:
             file.write(content)
@@ -173,27 +175,46 @@ def txt_to_aitxt(
     print(f"txt_to_aitxt zh: {txt_file} -> {zh_aitxt_file}")
     return en_aitxt_file, zh_aitxt_file
 
-if __name__ == "__main__":
-    #-------------------
-    chat_client = build_client()
-
-    #-------------------
-    # content_file, reasoning_file = txt_ai_translate(
-    #     txt_file="D:/output/001-en.txt",
-    #     chat_client=chat_client,
-    #     topic="Microsoft: PL-100",
-    #     model="deepseek-chat",
-    #     )
-
-    #-------------------
-    # en_aitxt_file, zh_aitxt_file = content_to_aitxt(
-    #     content_file="D:/output/001-en.content"
-    # )
-
-    #-------------------
-    en_aitxt_file, zh_aitxt_file = txt_to_aitxt(
-        txt_file="D:/output/001-en.txt",
-        chat_client=chat_client,
-        topic="Microsoft: PL-100",
+# txts to aitxts
+def txts_to_aitxts(
+        txt_dir="subtitles",
+        suffix="en.txt",
+        chat_client=None,
+        topic=None,
         model="deepseek-chat",
+    ):
+    for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
+        txt_to_aitxt(
+            txt_file=txt_file,
+            chat_client=chat_client,
+            topic=topic,
+            model=model,
+        )
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="deepseek txt to aisrt")
+    parser.add_argument("--txt_dir", help="txt dir", default="subtitles")
+    parser.add_argument("--suffix", help="filename suffix", default="en.txt")
+    parser.add_argument("--topic", help="ai translate topic", default="Power Platform")
+    parser.add_argument("--model", help="deepseek model", choices=["deepseek-chat", "deepseek-reasoner"], default="deepseek-chat")
+    parser.add_argument("--api_key", help="deepseek api key", default="")
+    parser.add_argument("--base_url", help="deepseek api key", default="https://api.deepseek.com")
+    args = parser.parse_args()
+
+    api_key = args.api_key
+    if api_key == "":
+        api_key = os.environ.get('DEEPSEEK_API_KEY')
+    assert api_key != ""
+
+    chat_client = build_client(
+        api_key     = api_key,
+        base_url    = "https://api.deepseek.com",
+    )
+
+    txts_to_aitxts(
+        txt_dir     = args.txt_dir,
+        suffix      = args.suffix,
+        chat_client = chat_client,
+        topic       = args.topic,
+        model       = args.model,
     )
