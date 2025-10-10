@@ -36,21 +36,24 @@ def srt_to_audio(
 
 def srts_to_audios(
         srt_dir = "subtitles",
+        suffix = "srt",
         audio_dir = "audios",
         lang = "zh",
-        voice = "zh-CN-XiaoxiaoNeural"):
+        voice = "zh-CN-XiaoxiaoNeural",
+        ):
     """
     srt_dir   : srt 输入目录
     audio_dir : audio 输出目录
     lang      : 配音语言
     voice     : 配音语音
+    suffix    : 字幕文件后缀
     """
 
     # 创建 audio 输出目录
     if not os.path.exists(audio_dir):
         os.makedirs(audio_dir)
     # 遍历 lang 语言字幕，合成语音
-    for srt_file in glob.glob(os.path.join(srt_dir, f"**/*-{lang}.srt"), recursive=True):
+    for srt_file in glob.glob(os.path.join(srt_dir, f"**/*-{lang}.{suffix}"), recursive=True):
         basename = os.path.basename(srt_file).split("-")[0]
         audio_file = f"{audio_dir}/{basename}-{lang}.mp3"
         # 合成语音
@@ -63,6 +66,7 @@ def srts_to_audios(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="audio to srt")
     parser.add_argument("srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--suffix", help="filename suffix", choices=["srt", "aisrt"], default="srt")
     parser.add_argument("--audio_dir", help="audio dir", default="audios")
     parser.add_argument("--lang", help="lang", default="zh")
     parser.add_argument("--voice", help="dubbing voice", default="zh-CN-XiaoxiaoNeural")
@@ -70,6 +74,7 @@ if __name__ == "__main__":
 
     srts_to_audios(
         srt_dir     = args.srt_dir,
+        suffix      = args.suffix,
         audio_dir   = args.audio_dir,
         lang        = args.lang,
         voice       = args.voice,

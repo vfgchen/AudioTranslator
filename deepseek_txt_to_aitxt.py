@@ -105,17 +105,18 @@ def txt_ai_translate(
     )
     # 保存deepseek输出内容，思考内容
     txt_dir = path.dirname(txt_file)
-    basename = path.basename(txt_file).split("-")[0]
+    # basename = path.basename(txt_file).split("-")[0]
+    basename = path.splitext(txt_file)[0]
     content_file = path.join(txt_dir, f"{basename}.content")
+    reasoning_file = path.join(txt_dir, f"{basename}.reasoning")
     if content != "":
         with open(content_file, "w", encoding="utf-8") as file:
             file.write(content)
-            print(f"txt_translate, content file: {content_file}")
+            print(f"txt_ai_translate, content file: {content_file}")
     if reasoning != "":
-        reasoning_file = path.join(txt_dir, f"{basename}.reasoning")
         with open(reasoning_file, "w", encoding="utf-8") as file:
             file.write(reasoning)
-            print(f"txt_translate, reasoning file: {reasoning_file}")
+            print(f"txt_ai_translate, reasoning file: {reasoning_file}")
     return content_file, reasoning_file
 
 # 解析 AI Chat 输出内容
@@ -190,9 +191,9 @@ if __name__ == "__main__":
     # )
 
     #-------------------
-    # en_aitxt_file, zh_aitxt_file = txt_to_aitxt(
-    #     txt_file="D:/output/001-en.txt",
-    #     chat_client=chat_client,
-    #     topic="Microsoft: PL-100",
-    #     model="deepseek-chat",
-    # )
+    en_aitxt_file, zh_aitxt_file = txt_to_aitxt(
+        txt_file="D:/output/001-en.txt",
+        chat_client=chat_client,
+        topic="Microsoft: PL-100",
+        model="deepseek-chat",
+    )
