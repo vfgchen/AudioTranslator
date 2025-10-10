@@ -51,7 +51,7 @@ def srts_translate(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="audio to srt")
-    parser.add_argument("srt_dir", help="srt dir", default="subtitles")
+    parser.add_argument("--srt_dir", help="srt dir", default="subtitles")
     parser.add_argument("-f", help="from type", default="en")
     parser.add_argument("-t", help="to lang", default="zh")
     args = parser.parse_args()
