@@ -21,6 +21,8 @@ pip install emoji
 modelscope download --model iic/SenseVoiceSmall --local_dir models/iic/SenseVoiceSmall
 modelscope download --model iic/speech_fsmn_vad_zh-cn-16k-common-pytorch --local_dir models/iic/speech_fsmn_vad_zh-cn-16k-common-pytorch
 
+# deepseek chat 翻译
+pip install openai
 ```
 
 1. audio_converte.py

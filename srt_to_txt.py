@@ -98,9 +98,15 @@ def txts_to_srts(
 
 if __name__ == "__main__":
     #-------------------
-    # srt_file="D:/output/001-en.srt"
-    # txt_file="D:/output/001-en.txt"
-    # srt_to_txt(srt_file, txt_file)
+    # root_dir = "E:/Download/D365FO_Training/Udemy_PL200_Microsoft Power Platform Functional Consultant 2025-5"
+    # en_srt_dir = path.join(root_dir, "en-srt")
+    # srts_correct(en_srt_dir)
+    # srts_to_txts(en_srt_dir)
+    
+    #-------------------
+    srt_file="D:/output/001-en.srt"
+    txt_file="D:/output/001-en.txt"
+    srt_to_txt(srt_file, txt_file)
 
     #-------------------
     # txt_file="D:/output/001-zh.txt"
@@ -117,5 +123,5 @@ if __name__ == "__main__":
     # srts_to_txts(txt_dir)
 
     #-------------------
-    txt_dir="D:/output"
-    txts_to_srts(txt_dir)
+    # txt_dir="D:/output"
+    # txts_to_srts(txt_dir)
