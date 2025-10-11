@@ -11,14 +11,12 @@ from srt_to_txt import srt_to_txt
 txt_dir="D:/output/subtitles"
 
 # 生成 ***-en.req
-# suffix="en.txt"
-# context_info = dict()
-# context_info["topic"]="Power Platform: PL-100"
-# txts_to_reqs(
-#     txt_dir=txt_dir,
-#     suffix=suffix,
-#     context_info=context_info
-# )
+suffix="en.txt"
+txts_to_reqs(
+    txt_dir=txt_dir,
+    suffix=suffix,
+    topic="Power Platform: PL-100"
+)
 
 # srt_correct
 # srt_file = path.join(txt_dir, "017-en.srt")
@@ -42,19 +40,19 @@ txt_dir="D:/output/subtitles"
 # )
 
 # 生成 ***-en.aisrt
-en_aitxt_file=path.join("./subtitles", "030-en.aitxt")
-en_aisrt_file=path.join("./subtitles", "030-en.aisrt")
-aitxt_to_aisrt(
-    aitxt_file=en_aitxt_file,
-    aisrt_file=en_aisrt_file,
-    ref_srt_lang="en"
-)
+# en_aitxt_file=path.join("./subtitles", "030-en.aitxt")
+# en_aisrt_file=path.join("./subtitles", "030-en.aisrt")
+# aitxt_to_aisrt(
+#     aitxt_file=en_aitxt_file,
+#     aisrt_file=en_aisrt_file,
+#     ref_srt_lang="en"
+# )
 
 # 生成 ***-zh.aisrt
-zh_aitxt_file=path.join("./subtitles", "030-zh.aitxt")
-zh_aisrt_file=path.join("./subtitles", "030-zh.aisrt")
-aitxt_to_aisrt(
-    aitxt_file=zh_aitxt_file,
-    aisrt_file=zh_aisrt_file,
-    ref_srt_lang="en"
-)
+# zh_aitxt_file=path.join("./subtitles", "030-zh.aitxt")
+# zh_aisrt_file=path.join("./subtitles", "030-zh.aisrt")
+# aitxt_to_aisrt(
+#     aitxt_file=zh_aitxt_file,
+#     aisrt_file=zh_aisrt_file,
+#     ref_srt_lang="en"
+# )

@@ -61,7 +61,7 @@ def build_client(
 def txt_to_req(
         txt_file,
         req_file,
-        context_info: Dict = None,
+        topic,
     ):
     # 创建 req_file 所在目录
     if not path.exists(path.dirname(req_file)):
@@ -70,6 +70,8 @@ def txt_to_req(
     with open(txt_file, "r", encoding="utf-8") as file:
         input_text = file.read()
     # 构建提示文本
+    context_info = dict()
+    context_info["topic"]=topic
     input_content = build_prompt(
         input_text=input_text,
         context_info=context_info
@@ -216,14 +218,14 @@ def txt_to_aitxt(
 def txts_to_reqs(
         txt_dir="subtitles",
         suffix="en.txt",
-        context_info: Dict = None,
+        topic=None,
     ):
     for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
         req_file = f"{path.splitext(txt_file)[0]}.req"
         txt_to_req(
             txt_file=txt_file,
             req_file=req_file,
-            context_info=context_info,
+            topic=topic,
         )
 
 # txts to aitxts
