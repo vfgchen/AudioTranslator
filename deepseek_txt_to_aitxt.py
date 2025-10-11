@@ -243,18 +243,26 @@ async def txts_to_aitxts_async(
         topic=None,
         model="deepseek-reasoner",
         delete_txt_file=True,
+        batch_size=5,
     ):
     txt_file_list = [txt_file for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True)]
+
     # 分批执行，每个批次5个任务
-    for txt_file in batch_generator(txt_file_list, 2):
-        await txt_to_aitxt_async(
-            txt_file=txt_file,
-            chat_client=chat_client,
-            topic=topic,
-            model=model,
-        )
+    for batch in batch_generator(txt_file_list, batch_size):
+        # 批次内的5个任务同时执行
+        tasks = [
+            asyncio.create_task(txt_to_aitxt_async(
+                txt_file=txt_file,
+                chat_client=chat_client,
+                topic=topic,
+                model=model,
+            )) for txt_file in batch
+        ]
+        await asyncio.gather(*tasks)
+        # 批次任务完成后删除txt_file
         if delete_txt_file:
-            os.remove(txt_file)
+            for txt_file in batch:
+                os.remove(txt_file)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="deepseek txt to aisrt")
@@ -263,6 +271,7 @@ if __name__ == "__main__":
     parser.add_argument("--topic", help="ai translate topic", default="Power Platform")
     parser.add_argument("--model", help="deepseek model", choices=["deepseek-chat", "deepseek-reasoner"], default="deepseek-reasoner")
     parser.add_argument("--delete_txt_file", help="delete txt file on success", default="no")
+    parser.add_argument("--batch_size", help="async batch size", default="5")
     parser.add_argument("--api_key", help="deepseek api key", default="")
     parser.add_argument("--base_url", help="deepseek api key", default="https://api.deepseek.com")
     args = parser.parse_args()
@@ -284,5 +293,6 @@ if __name__ == "__main__":
         chat_client = chat_client,
         topic       = args.topic,
         model       = args.model,
-        delete_txt_file = delete_txt_file
+        delete_txt_file = delete_txt_file,
+        batch_size  = int(args.batch_size),
     ))
