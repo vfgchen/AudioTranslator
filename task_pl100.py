@@ -15,7 +15,7 @@ with open(resolve("task.txt"), "r", encoding="utf-8") as file:
     tasks = file.readlines()
 chat_client = build_client(api_key=args.api_key)
 for task in tasks:
-    txt_file = resolve(task)
+    txt_file = resolve(task.strip())
     content_file, reasoning_file = txt_ai_translate(
         txt_file=txt_file,
         chat_client=chat_client,
