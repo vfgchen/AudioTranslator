@@ -6,6 +6,8 @@ import argparse
 from os import path
 from typing import Dict
 from openai import OpenAI
+from openai import AsyncOpenAI
+import asyncio
 
 # 构建 deepseek 提示词
 def build_prompt(
@@ -50,12 +52,12 @@ def build_prompt(
 5. 严格保持输出和输入的段落结构一致，请严格保持输入输出行数一致
 """
 
-# deepseek client
-def build_client(
+# deepseek async client
+def build_async_client(
         api_key : str = os.environ.get('DEEPSEEK_API_KEY'),
         base_url="https://api.deepseek.com"
     ):
-    return OpenAI(api_key=api_key, base_url=base_url)
+    return AsyncOpenAI(api_key=api_key, base_url=base_url)
 
 # txt to req
 def txt_to_req(
@@ -82,11 +84,11 @@ def txt_to_req(
     print(f"txt_to_req, save: {req_file}")
     return req_file
 
-# deepseek ai translate
-def text_ai_translate(
+# deepseek ai translate async
+async def text_ai_translate_async(
         input_text: str,
         context_info: Dict = None,
-        chat_client: OpenAI = None,
+        chat_client: AsyncOpenAI = None,
         model: str = "deepseek-reasoner"
         ):
     """
@@ -102,7 +104,7 @@ def text_ai_translate(
         )
     # 输出内容
     print(f"\ntext_ai_translate, send:\n{input_content}")
-    response = chat_client.chat.completions.create(
+    response = await chat_client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": f"{input_content}"},
@@ -121,7 +123,7 @@ def text_ai_translate(
     return content, reasoning_content
 
 # deepseek txt file ai translate
-def txt_ai_translate(
+async def txt_ai_translate_async(
         txt_file,
         chat_client,
         topic,
@@ -141,7 +143,7 @@ def txt_ai_translate(
     # 读取txt文件内容并发送给ai翻译
     with open(txt_file, "r", encoding="utf-8") as txt:
         input_text = txt.read()
-    content, reasoning = text_ai_translate(
+    content, reasoning = await text_ai_translate_async(
         input_text=input_text,
         context_info=context_info,
         chat_client=chat_client,
@@ -194,14 +196,14 @@ def content_to_aitxt(
     return en_aitxt_file, zh_aitxt_file
 
 # txt to aitxt
-def txt_to_aitxt(
+async def txt_to_aitxt_async(
         txt_file,
         chat_client,
         topic,
         model="deepseek-reasoner",
     ):
     # AI 翻译
-    content_file, reasoning_file = txt_ai_translate(
+    content_file, reasoning_file = await txt_ai_translate_async(
         txt_file=txt_file,
         chat_client=chat_client,
         topic=topic,
@@ -229,7 +231,7 @@ def txts_to_reqs(
         )
 
 # txts to aitxts
-def txts_to_aitxts(
+async def txts_to_aitxts_async(
         txt_dir="subtitles",
         suffix="en.txt",
         chat_client=None,
@@ -238,7 +240,7 @@ def txts_to_aitxts(
         delete_txt_file=True,
     ):
     for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
-        txt_to_aitxt(
+        await txt_to_aitxt_async(
             txt_file=txt_file,
             chat_client=chat_client,
             topic=topic,
@@ -263,17 +265,17 @@ if __name__ == "__main__":
         api_key = os.environ.get('DEEPSEEK_API_KEY')
     assert api_key != ""
 
-    chat_client = build_client(
+    chat_client = build_async_client(
         api_key     = api_key,
         base_url    = "https://api.deepseek.com",
     )
 
     delete_txt_file = args.delete_txt_file.lower() in ["yes", "y", "true"]
-    txts_to_aitxts(
+    asyncio.run(txts_to_aitxts_async(
         txt_dir     = args.txt_dir,
         suffix      = args.suffix,
         chat_client = chat_client,
         topic       = args.topic,
         model       = args.model,
         delete_txt_file = delete_txt_file
-    )
+    ))

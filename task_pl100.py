@@ -1,6 +1,6 @@
 from os import path
-from deepseek_txt_to_aitxt import txt_ai_translate
-from deepseek_txt_to_aitxt import build_client
+from deepseek_txt_to_aitxt import txt_ai_translate_async
+from deepseek_txt_to_aitxt import build_async_client
 import argparse
 
 root_dir = "subtitles"
@@ -13,11 +13,11 @@ args = parser.parse_args()
 # 读取任务
 with open(resolve("task.txt"), "r", encoding="utf-8") as file:
     tasks = [item for item in file.readlines() if len(item.strip()) > 0]
-chat_client = build_client(api_key=args.api_key)
+chat_client = build_async_client(api_key=args.api_key)
 for task in tasks:
     txt_file = resolve(task.strip())
     print(txt_file)
-    content_file, reasoning_file = txt_ai_translate(
+    content_file, reasoning_file = txt_ai_translate_async(
         txt_file=txt_file,
         chat_client=chat_client,
         topic="Power Platform: PL-100",
