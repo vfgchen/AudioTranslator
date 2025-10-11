@@ -18,7 +18,7 @@ async def main():
     chat_client = build_async_client(api_key=args.api_key)
     for task in tasks:
         txt_file = resolve(task.strip())
-        print(txt_file)
+        print(f"task_pl100: {txt_file}")
         content_file, reasoning_file = await txt_ai_translate_async(
             txt_file=txt_file,
             chat_client=chat_client,
@@ -26,4 +26,4 @@ async def main():
         )
 
 if __name__ == "__main__":
-    asyncio(main())
+    asyncio.run(main())

@@ -246,7 +246,7 @@ async def txts_to_aitxts_async(
     ):
     txt_file_list = [txt_file for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True)]
     # 分批执行，每个批次5个任务
-    for txt_file in batch_generator(txt_file_list, 5):
+    for txt_file in batch_generator(txt_file_list, 2):
         await txt_to_aitxt_async(
             txt_file=txt_file,
             chat_client=chat_client,
