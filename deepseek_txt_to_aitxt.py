@@ -57,11 +57,33 @@ def build_client(
     ):
     return OpenAI(api_key=api_key, base_url=base_url)
 
+# txt to req
+def txt_to_req(
+        txt_file,
+        req_file,
+        context_info: Dict = None,
+    ):
+    # 创建 req_file 所在目录
+    if not path.exists(path.dirname(req_file)):
+        os.makedirs(path.dirname(req_file))
+    # 读取 txt_file
+    with open(txt_file, "r", encoding="utf-8") as file:
+        input_text = file.read()
+    # 构建提示文本
+    input_content = build_prompt(
+        input_text=input_text,
+        context_info=context_info
+        )
+    # 保持到 req_file
+    with open(req_file, "w", "utf-8") as file:
+        file.write(input_content)
+    print(f"txt_to_req, save: {req_file}")
+    return req_file
+
 # deepseek ai translate
 def text_ai_translate(
         input_text: str,
         context_info: Dict = None,
-        req_file: str = None,
         chat_client: OpenAI = None,
         model: str = "deepseek-reasoner"
         ):
@@ -76,10 +98,6 @@ def text_ai_translate(
         input_text=input_text,
         context_info=context_info
         )
-    # 暂存发送给deepseek的请求
-    with open(req_file, "w", encoding="utf-8") as file:
-        file.write(input_content)
-        print(f"text_ai_translate, save req_file: {req_file}")
     # 输出内容
     print(f"\ntext_ai_translate, send:\n{input_content}")
     response = chat_client.chat.completions.create(
@@ -107,14 +125,20 @@ def txt_ai_translate(
         topic,
         model="deepseek-chat",
     ):
-    # 读取输入文件文本
-    with open(txt_file, "r", encoding="utf-8") as txt:
-        input_text = txt.read()
-    # 文本翻译
+    # 构建翻译上下文信息
     context_info = dict()
     if topic: context_info["topic"] = topic
-    # request file
+
+    # txt to req, 生成***-en.req
     req_file = f"{path.splitext(txt_file)[0]}.req"
+    txt_to_req(
+        txt_file=txt_file,
+        req_file=req_file,
+        context_info=context_info)
+    
+    # 读取txt文件内容并发送给ai翻译
+    with open(txt_file, "r", encoding="utf-8") as txt:
+        input_text = txt.read()
     content, reasoning = text_ai_translate(
         input_text=input_text,
         context_info=context_info,
@@ -122,6 +146,7 @@ def txt_ai_translate(
         chat_client=chat_client,
         model=model,
     )
+
     # 保存deepseek输出内容，思考内容
     content_file = f"{path.splitext(txt_file)[0]}.content"
     reasoning_file = f"{path.splitext(txt_file)[0]}.reasoning"
