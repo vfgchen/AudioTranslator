@@ -2,7 +2,7 @@ import os
 from os import path
 import glob
 import argparse
-
+import re
 import pysrt
 
 # aitxt to aisrt
@@ -14,23 +14,33 @@ def aitxt_to_aisrt(
     # 创建 aisrt_file 所在的目录
     if not path.exists(path.dirname(aisrt_file)):
         os.makedirs(path.dirname(aisrt_file))
-    # 读取 aitxt 所有行
+    
+    # 读取 aitxt 所有行，并解析带行号的行
+    regex = re.compile(r"^(?P<seq>\d+)[\.\s]+(?P<text>.*)$")
     with open(aitxt_file, 'r', encoding="utf-8") as file:
         ai_lines = file.readlines()
         ai_lines = [line.strip() for line in ai_lines if len(line.strip()) > 0]
+        ai_lines = [line for line in ai_lines if regex.match(line)]
+    
     # 读取参考字幕的条目
     aitxt_dir = path.dirname(aitxt_file)
     basename = path.basename(aitxt_file).split("-")[0]
     ref_srt_file = path.join(aitxt_dir, f"{basename}-{ref_srt_lang}.srt")
     assert path.exists(ref_srt_file)
     ref_subs = pysrt.open(ref_srt_file)
+    
     # 断言 aitxt 行和参考字幕的行数相等
+    print(f"{path.basename(aitxt_file)}: {len(ai_lines)}, {path.basename(ref_srt_file)}: {len(ref_subs)}")
     assert len(ai_lines) == len(ref_subs)
+    
     # 创建aisrt字幕文件
-    for index, ref_sub in enumerate(ref_subs, start=1):
-        ref_sub.index = index
-        ref_sub.text = ai_lines[index - 1]
-        print(f"{index:03d} [{ref_sub.start} --> {ref_sub.end}] {ref_sub.text}")
+    for ref_sub in ref_subs:
+        ai_line = ai_lines[ref_sub.index - 1]
+        res = regex.match(ai_line)
+        ai_seq = int(res.group("seq"))
+        assert ai_seq == ref_sub.index
+        ref_sub.text = res.group("text")
+        print(f"{ai_seq:03d} [{ref_sub.start} --> {ref_sub.end}] {ref_sub.text}")
     srt_subs = pysrt.SubRipFile(ref_subs)
     srt_subs.save(aisrt_file, encoding="utf-8")
     print(f"aitxt_to_aisrt: {aitxt_file} -> {aisrt_file}")
