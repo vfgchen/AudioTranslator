@@ -3,6 +3,7 @@ from deepseek_txt_to_aitxt import txt_ai_translate_async
 from deepseek_txt_to_aitxt import build_async_client
 import argparse
 import asyncio
+import os
 
 async def main():
     root_dir = "subtitles"
@@ -15,6 +16,11 @@ async def main():
     # 读取任务
     with open(resolve("task.txt"), "r", encoding="utf-8") as file:
         tasks = [item for item in file.readlines() if len(item.strip()) > 0]
+    
+    api_key = args.api_key
+    if api_key == "":
+        api_key = os.environ.get('DEEPSEEK_API_KEY')
+
     chat_client = build_async_client(api_key=args.api_key)
     for task in tasks:
         txt_file = resolve(task.strip())

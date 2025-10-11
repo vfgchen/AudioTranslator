@@ -129,16 +129,16 @@ async def txt_ai_translate_async(
         topic,
         model="deepseek-reasoner",
     ):
-    # 构建翻译上下文信息
-    context_info = dict()
-    if topic: context_info["topic"] = topic
-
     # txt to req, 生成***-en.req
     req_file = f"{path.splitext(txt_file)[0]}.req"
     txt_to_req(
         txt_file=txt_file,
         req_file=req_file,
-        context_info=context_info)
+        topic=topic)
+    
+    # 构建翻译上下文信息
+    context_info = dict()
+    if topic: context_info["topic"] = topic
     
     # 读取txt文件内容并发送给ai翻译
     with open(txt_file, "r", encoding="utf-8") as txt:
