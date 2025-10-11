@@ -142,7 +142,6 @@ def txt_ai_translate(
     content, reasoning = text_ai_translate(
         input_text=input_text,
         context_info=context_info,
-        req_file=req_file,
         chat_client=chat_client,
         model=model,
     )

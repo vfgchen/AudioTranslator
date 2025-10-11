@@ -12,10 +12,11 @@ args = parser.parse_args()
 
 # 读取任务
 with open(resolve("task.txt"), "r", encoding="utf-8") as file:
-    tasks = file.readlines()
+    tasks = [item for item in file.readlines() if len(item.strip()) > 0]
 chat_client = build_client(api_key=args.api_key)
 for task in tasks:
     txt_file = resolve(task.strip())
+    print(txt_file)
     content_file, reasoning_file = txt_ai_translate(
         txt_file=txt_file,
         chat_client=chat_client,
