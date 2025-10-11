@@ -43,7 +43,26 @@ def aitxt_to_aisrt(
         print(f"{ai_seq:03d} [{ref_sub.start} --> {ref_sub.end}] {ref_sub.text}")
     srt_subs = pysrt.SubRipFile(ref_subs)
     srt_subs.save(aisrt_file, encoding="utf-8")
+
+    # 修正 aisrt 中的空行
+    aisrt_correct(aisrt_file)
     print(f"aitxt_to_aisrt: {aitxt_file} -> {aisrt_file}")
+    return aisrt_file
+
+# aisrt correct，合并其中的空行时间到上一行
+def aisrt_correct(
+        aisrt_file
+    ):
+    aisubs = pysrt.SubRipFile()
+    for sub in pysrt.open(aisrt_file):
+        if len(sub.text.strip()) > 0:
+            sub.index = len(aisubs) + 1
+            aisubs.append(sub)
+        else:
+            if len(aisubs) == 0: continue
+            aisubs[-1].end = sub.end
+    aisubs.save(aisrt_file, encoding="utf-8")
+    print(f"aisrt_correct: {aisrt_file}")
     return aisrt_file
 
 # aitxt 批量转 aisrt
