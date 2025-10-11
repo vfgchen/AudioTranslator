@@ -79,6 +79,7 @@ def text_ai_translate(
     # 暂存发送给deepseek的请求
     with open(req_file, "w", encoding="utf-8") as file:
         file.write(input_content)
+        print(f"text_ai_translate, save req_file: {req_file}")
     # 输出内容
     print(f"\ntext_ai_translate, send:\n{input_content}")
     response = chat_client.chat.completions.create(
