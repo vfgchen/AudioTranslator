@@ -123,7 +123,7 @@ def txt_ai_translate(
         txt_file,
         chat_client,
         topic,
-        model="deepseek-chat",
+        model="deepseek-reasoner",
     ):
     # 构建翻译上下文信息
     context_info = dict()
@@ -196,7 +196,7 @@ def txt_to_aitxt(
         txt_file,
         chat_client,
         topic,
-        model="deepseek-chat",
+        model="deepseek-reasoner",
     ):
     # AI 翻译
     content_file, reasoning_file = txt_ai_translate(
@@ -232,7 +232,7 @@ def txts_to_aitxts(
         suffix="en.txt",
         chat_client=None,
         topic=None,
-        model="deepseek-chat",
+        model="deepseek-reasoner",
         delete_txt_file=True,
     ):
     for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
