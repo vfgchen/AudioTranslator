@@ -3,7 +3,7 @@ from deepseek_txt_to_aitxt import txt_ai_translate
 from deepseek_txt_to_aitxt import build_client
 import argparse
 
-root_dir = "D:/output/subtitles"
+root_dir = "subtitles"
 def resolve(item): return path.join(root_dir, item)
 
 parser = argparse.ArgumentParser(description="audio to srt")
