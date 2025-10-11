@@ -7,7 +7,7 @@ from deepseek_txt_to_aitxt import content_to_aitxt
 from aitxt_to_aisrt import aitxt_to_aisrt
 
 # 生成 ***-en.req
-txt_dir="./subtitles"
+txt_dir="D:/output/subtitles"
 suffix="en.txt"
 context_info = dict()
 context_info["topic"]="Power Platform: PL-100"
