@@ -6,11 +6,13 @@ import argparse
 import pysrt
 
 # srt 修正，删除空行，无效行
-def srt_correct(srt_file):
+def srt_correct(srt_file, ):
     # 读取 srt 文件
     subs = pysrt.open(srt_file)
     # 去除其中 text 为空的 sub
     filtered_subs = [sub for sub in subs if len(sub.text.strip()) > 1]
+    # 去除短小的条目
+    filtered_subs = [sub for sub in subs if not sub.text.strip(".,").lower() in ["yeah", "and", "or", "so"]]
     # 重新编号字幕索引
     for index, sub in enumerate(filtered_subs, start=1):
         sub.index = index
