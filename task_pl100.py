@@ -15,21 +15,23 @@ async def main():
 
     # 读取任务
     with open(resolve("task.txt"), "r", encoding="utf-8") as file:
-        tasks = [item for item in file.readlines() if len(item.strip()) > 0]
+        filenames = [item for item in file.readlines() if len(item.strip()) > 0]
     
+    # 构建 chat_client
     api_key = args.api_key
     if api_key == "":
         api_key = os.environ.get('DEEPSEEK_API_KEY')
+    chat_client = build_async_client(api_key=api_key)
 
-    chat_client = build_async_client(api_key=args.api_key)
-    for task in tasks:
-        txt_file = resolve(task.strip())
-        print(f"task_pl100: {txt_file}")
-        content_file, reasoning_file = await txt_ai_translate_async(
-            txt_file=txt_file,
+    # 异步执行
+    tasks = [
+        asyncio.create_task(txt_ai_translate_async(
+            txt_file=resolve(filename.strip()),
             chat_client=chat_client,
             topic="Power Platform: PL-100",
-        )
+        )) for filename in filenames
+    ]
+    await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     asyncio.run(main())
