@@ -75,7 +75,7 @@ def txt_to_req(
         context_info=context_info
         )
     # 保持到 req_file
-    with open(req_file, "w", "utf-8") as file:
+    with open(req_file, "w", encoding="utf-8") as file:
         file.write(input_content)
     print(f"txt_to_req, save: {req_file}")
     return req_file
@@ -213,6 +213,19 @@ def txt_to_aitxt(
     print(f"txt_to_aitxt en: {txt_file} -> {en_aitxt_file}")
     print(f"txt_to_aitxt zh: {txt_file} -> {zh_aitxt_file}")
     return en_aitxt_file, zh_aitxt_file
+
+def txts_to_reqs(
+        txt_dir="subtitles",
+        suffix="en.txt",
+        context_info: Dict = None,
+    ):
+    for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
+        req_file = f"{path.splitext(txt_file)[0]}.req"
+        txt_to_req(
+            txt_file=txt_file,
+            req_file=req_file,
+            context_info=context_info,
+        )
 
 # txts to aitxts
 def txts_to_aitxts(
