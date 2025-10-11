@@ -11,20 +11,20 @@ from srt_to_txt import srt_to_txt
 txt_dir="D:/output/subtitles"
 
 # 生成 ***-en.req
-# suffix="en.txt"
-# context_info = dict()
-# context_info["topic"]="Power Platform: PL-100"
-# txts_to_reqs(
-#     txt_dir=txt_dir,
-#     suffix=suffix,
-#     context_info=context_info
-# )
+suffix="en.txt"
+context_info = dict()
+context_info["topic"]="Power Platform: PL-100"
+txts_to_reqs(
+    txt_dir=txt_dir,
+    suffix=suffix,
+    context_info=context_info
+)
 
 # srt_correct
-srt_file = path.join(txt_dir, "017-en.srt")
-txt_file = path.join(txt_dir, "017-en.txt")
-srt_correct(srt_file)
-srt_to_txt(srt_file, txt_file, True)
+# srt_file = path.join(txt_dir, "017-en.srt")
+# txt_file = path.join(txt_dir, "017-en.txt")
+# srt_correct(srt_file)
+# srt_to_txt(srt_file, txt_file, True)
 
 # 生成 ***-en.content
 # txt_file=path.join("./subtitles", "001-en.txt")
