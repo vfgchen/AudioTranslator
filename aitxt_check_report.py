@@ -44,6 +44,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="audio to srt")
     parser.add_argument("--aitxt_dir", help="aitxt dir", default="subtitles")
     parser.add_argument("--suffix", help="filename suffix", default="en.aitxt")
+    parser.add_argument("--report_file", help="report diff file", default="report.diff")
     args = parser.parse_args()
 
     result = check_aitxts(
@@ -52,6 +53,6 @@ if __name__ == "__main__":
         )
     reports = "\n".join([item for item in result])
     print(reports)
-    diff_file = path.join(args.aitxt_dir, "diff.txt")
+    diff_file = path.join(args.aitxt_dir, args.report_file)
     with open(diff_file, "w", encoding="utf-8") as file:
         file.write(reports)
