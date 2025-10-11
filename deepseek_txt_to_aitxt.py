@@ -230,6 +230,11 @@ def txts_to_reqs(
             topic=topic,
         )
 
+# 分组生成器
+def batch_generator(data, batch_size):
+    for i in range(0, len(data), batch_size):
+        yield data[i:i + batch_size]
+
 # txts to aitxts
 async def txts_to_aitxts_async(
         txt_dir="subtitles",
@@ -239,7 +244,9 @@ async def txts_to_aitxts_async(
         model="deepseek-reasoner",
         delete_txt_file=True,
     ):
-    for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True):
+    txt_file_list = [txt_file for txt_file in glob.glob(path.join(txt_dir, f"**/*{suffix}"), recursive=True)]
+    # 分批执行，每个批次5个任务
+    for txt_file in batch_generator(txt_file_list, 5):
         await txt_to_aitxt_async(
             txt_file=txt_file,
             chat_client=chat_client,

@@ -11,12 +11,12 @@ from srt_to_txt import srt_to_txt
 txt_dir="D:/output/subtitles"
 
 # 生成 ***-en.req
-suffix="en.txt"
-txts_to_reqs(
-    txt_dir=txt_dir,
-    suffix=suffix,
-    topic="Power Platform: PL-100"
-)
+# suffix="en.txt"
+# txts_to_reqs(
+#     txt_dir=txt_dir,
+#     suffix=suffix,
+#     topic="Power Platform: PL-100"
+# )
 
 # srt_correct
 # srt_file = path.join(txt_dir, "017-en.srt")
